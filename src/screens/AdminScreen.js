@@ -10,9 +10,11 @@ export default function AdminScreen() {
   const addProduct = async () => {
     try {
       await api.post('/products', { name, image, price });
+      console.log("success");
       alert('Product added');
     } catch {
-      alert('Error adding product');
+      console.log("fail");
+      // alert('Error adding product');
     }
   };
 

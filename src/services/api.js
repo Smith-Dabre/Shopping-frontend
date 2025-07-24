@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://your-backend-ip:5000/api', // Replace with your backend IP or localhost (with tunneling if needed)
+  baseURL: 'http://10.10.96.30:3000/api/',
 });
 
 export default api;

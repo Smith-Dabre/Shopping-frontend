@@ -1,15 +1,49 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const login = (userData) => setUser(userData);
-  const logout = () => setUser(null);
+  const login = async (userData) => {
+  console.log(userData);
+    
+    const { token, _id, name, role, email } = userData;
+    await AsyncStorage.setItem('token', token);
+    setUser(userData);
+    const saved = await AsyncStorage.getItem('token');
+    // console.log('Saved token:', saved); 
+
+  }
+
+  const logout = async () => {
+    setUser(null);
+    await AsyncStorage.removeItem('token');
+  }
+
+    useEffect(() => {
+    const checkUserSession = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (token) {
+          setUser({ token }); 
+        }
+      } catch (err) {
+        console.error('Failed to load token', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkUserSession();
+  }, []);
+  
+
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
