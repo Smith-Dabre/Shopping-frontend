@@ -31,6 +31,7 @@ export const AppNavigator = () => {
     
     <>
       <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Product" component={ProfileScreen} />
       <Stack.Screen name="Cart" component={CartScreen} />
       <Stack.Screen name="Payment" component={PaymentScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />

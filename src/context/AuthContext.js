@@ -8,12 +8,12 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const login = async (userData) => {
-  console.log(userData);
-    
+    console.log(userData);
+
     const { token, _id, name, role, email } = userData;
     await AsyncStorage.setItem('token', token);
     setUser(userData);
-    const saved = await AsyncStorage.getItem('token');
+    // const saved = await AsyncStorage.getItem('token');
     // console.log('Saved token:', saved); 
 
   }
@@ -23,12 +23,12 @@ export const AuthProvider = ({ children }) => {
     await AsyncStorage.removeItem('token');
   }
 
-    useEffect(() => {
+  useEffect(() => {
     const checkUserSession = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
         if (token) {
-          setUser({ token }); 
+          setUser({ token });
         }
       } catch (err) {
         console.error('Failed to load token', err);
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
 
     checkUserSession();
   }, []);
-  
+
 
 
   return (

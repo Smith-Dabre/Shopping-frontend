@@ -1,38 +1,23 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import { View, Text, TextInput, Button, Image, StyleSheet, KeyboardAvoidingView, Platform, } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import api from '../services/api';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CartContext } from '../context/CartContext';
 
 export default function LoginScreen({ navigation }) {
+  const { fetchCart } = useContext(CartContext);
   const { login } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  //   useEffect(() => {
-  //   const checkUserSession = async () => {
-  //     const token = await AsyncStorage.getItem('token');
-  //     if (token) {
-  //       console.log("works fine");
-  //       navigation.replace('Home');
-  //     } else {
-
-  //       navigation.replace('Login');
-  //     }
-  //   };
-
-  //   checkUserSession();
-  // }, []);
 
   const handleLogin = async () => {
     try {
-      const res = await api.post('/auth/login', { email, password });
-      // const { token, _id, name, role, email } = res.data;
-      // await AsyncStorage.setItem('token', token);
-      // await AsyncStorage.setItem('user', JSON.stringify({ _id, name, email, role }));
-      
+      const res = await api.post('/auth/login', { email, password }); 
       login(res.data);
+      fetchCart(res.data);
       console.log('User logged in with token:', res.data.token);
     } catch (err) {
       console.log(err);
@@ -41,33 +26,84 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#cdc2c2ff' }}>
-      <View style={{ flex: 1, padding: 20, marginTop: 160 }}>
-        <Text style={{ fontSize: 28, marginBottom: 20 }}>Login</Text>
-
-        <TextInput
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          style={{ marginBottom: 30, borderBottomWidth: 1 }}
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.innerContainer}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        {/* Logo */}
+        <Image
+          source={{ uri: 'https://i.imgur.com/u6IqC9q.png' }}
+          style={styles.logo}
         />
 
-        <TextInput
-          placeholder="Password"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-          style={{ marginBottom: 30, borderBottomWidth: 1 }}
-        />
+        {/* Login Form */}
+        <View style={styles.form}>
+          <TextInput
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            style={styles.input}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
 
-        <View style={{ marginBottom: 20 }}>
-          <Button title="Login" onPress={handleLogin} />
-        </View>
+          <TextInput
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            style={styles.input}
+          />
 
-        <View>
-          <Button title="Signup" onPress={() => navigation.navigate('Signup')} />
+          <View style={styles.buttonWrapper}>
+            <Button title="Login" onPress={handleLogin} color="#4CAF50" />
+          </View>
+
+          <View style={styles.buttonWrapper}>
+            <Button
+              title="Signup"
+              onPress={() => navigation.navigate('Signup')}
+              color="#2196F3"
+            />
+          </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#cdc2c2ff',
+  },
+  innerContainer: {
+    flex: 1,
+    padding: 20,
+    justifyContent: 'center',
+  },
+  logo: {
+    width: 130,
+    height: 130,
+    alignSelf: 'center',
+    marginBottom: 40,
+    borderRadius: 60,
+    backgroundColor: '#eee',
+  },
+  form: {
+    marginTop: 10,
+  },
+  input: {
+    borderBottomWidth: 1,
+    borderColor: '#555',
+    paddingVertical: 10,
+    marginBottom: 30,
+    fontSize: 16,
+  },
+  buttonWrapper: {
+    marginBottom: 15,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+});
